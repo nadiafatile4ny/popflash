@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PopFlash Photo Booth — Make Every Moment Pop!</title>
+  <meta name="description" content="PopFlash Photo Booth — starting at $399 for 4 hours (+$100/hr). POP PLUS: $699 for 6 hours. Serving Maryland & surrounding areas with colorful, modern photo booth fun." />
+  <meta name="theme-color" content="#ff4fd8" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff4fd8'/%3E%3Cstop offset='1' stop-color='%23ffd54f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='48' fill='url(%23g)'/%3E%3Cpath d='M33 58a17 17 0 1 0 34 0 17 17 0 0 0-34 0zm9-21 5-7h6l5 7h9a5 5 0 0 1 5 5v26a5 5 0 0 1-5 5H33a5 5 0 0 1-5-5V42a5 5 0 0 1 5-5h9z' fill='white'/%3E%3C/svg%3E" />
+  <style>
+    :root{
+      --bg1:#12071f; --bg2:#1a0e2b; --text:#fdfcff; --muted:#e8e0ee;
+      --brand1:#ff4fd8; --brand2:#7c4dff; --brand3:#00e1ff; --brand4:#ffd54f;
+      --card:rgba(255,255,255,.07); --stroke:rgba(255,255,255,.18);
+      --radius:22px; --shadow:0 14px 40px rgba(0,0,0,.35)
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; color:var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(255,79,216,.25), transparent 60%),
+                  radial-gradient(900px 500px at 120% 10%, rgba(0,225,255,.20), transparent 60%),
+                  radial-gradient(800px 400px at 50% 120%, rgba(255,213,79,.18), transparent 60%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+    a{color:inherit; text-decoration:none}
+    .container{max-width:1100px; margin-inline:auto; padding:0 1.1rem}
+    .btn{display:inline-flex; gap:.55rem; align-items:center; padding:.9rem 1.1rem; border-radius:14px; border:1px solid var(--stroke); font-weight:800; letter-spacing:.2px; box-shadow:var(--shadow);
+      background: linear-gradient(135deg, var(--brand1), var(--brand3)); color:#15051f; transition: transform .12s ease, box-shadow .12s ease}
+    .btn:hover{transform:translateY(-2px)}
+    .btn.ghost{background:transparent; color:var(--text)}
+    .chip{display:inline-block; padding:.3rem .7rem; border:1px solid var(--stroke); border-radius:999px; font-size:.85rem; color:var(--muted)}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03)); border:1px solid var(--stroke); border-radius:var(--radius); box-shadow:var(--shadow)}
+    header{position:sticky; top:0; z-index:40; backdrop-filter: blur(10px) saturate(150%); background: rgba(18,7,31,.6); border-bottom:1px solid var(--stroke)}
+    .nav{display:flex; align-items:center; justify-content:space-between; padding:.8rem 0; gap:1rem}
+    .brand{display:flex; align-items:center; gap:.6rem; font-weight:900; letter-spacing:.3px}
+    .brand svg{width:34px; height:34px}
+    .menu{display:flex; gap:1rem; align-items:center}
+    .menu a{color:var(--muted)}
+    .menu a:hover,.menu a.active{color:var(--text)}
+    .mobile-toggle{display:none; background:none; border:0; color:var(--text); font-size:1.7rem}
+    @media (max-width:800px){
+      .menu{display:none}
+      .mobile-toggle{display:inline}
+      #mobileMenu{display:none; flex-direction:column; gap:1rem; padding:1rem}
+      #mobileMenu a{color:var(--text)}
+    }
+
+    /* Confetti */
+    .confetti{position:fixed; inset:0; pointer-events:none; overflow:hidden}
+    .confetti span{position:absolute; width:10px; height:16px; border-radius:3px; opacity:.9; animation: fall 6s linear infinite}
+    @keyframes fall{ to{ transform: translateY(110vh) rotate(360deg)} }
+
+    /* Hero */
+    .hero{padding:5rem 0 3.2rem; position:relative}
+    .hero-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:2rem; align-items:center}
+    .headline{font-size: clamp(2rem, 2.6vw + 1rem, 3.3rem); line-height:1.05; margin:.3rem 0 1rem}
+    .sub{color:var(--muted); font-size:1.08rem}
+    .hero-visual{aspect-ratio:4/3; border-radius:28px; border:1px solid var(--stroke); position:relative; overflow:hidden}
+    .glow{position:absolute; inset:-30%; background: radial-gradient(closest-side, rgba(255,79,216,.25), transparent 60%); filter: blur(30px); animation: breathe 6s ease-in-out infinite alternate}
+    @keyframes breathe{ to{ transform: scale(1.1) translateY(-8px)} }
+
+    /* Sections */
+    section{padding:3.2rem 0}
+    h2{font-size:1.9rem; margin:0 0 1.2rem}
+    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem}
+    .grid-2{display:grid; grid-template-columns:repeat(2,1fr); gap:1rem}
+    @media (max-width:900px){.grid-3{grid-template-columns:1fr 1fr}}
+    @media (max-width:620px){.grid-3,.grid-2{grid-template-columns:1fr}}
+
+    .feature{padding:1.1rem}
+    .feature h3{margin:.6rem 0}
+    .icon{width:40px; height:40px; border-radius:12px; display:grid; place-items:center; background: linear-gradient(135deg, rgba(255,79,216,.35), rgba(0,225,255,.25)); border:1px solid var(--stroke)}
+
+    .pkg{padding:1.2rem; display:flex; flex-direction:column; gap:.6rem}
+    .price{font-weight:900; font-size:1.5rem; background: linear-gradient(135deg, var(--brand4), var(--brand1)); -webkit-background-clip:text; background-clip:text; color:transparent}
+
+    .gallery{display:grid; grid-template-columns:repeat(6,1fr); gap:.6rem}
+    .gallery a{display:block; border:1px solid var(--stroke); border-radius:14px; overflow:hidden}
+    .gallery img{display:block; width:100%; height:100%; aspect-ratio:1/1; object-fit:cover}
+    @media (max-width:900px){.gallery{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:520px){.gallery{grid-template-columns:repeat(2,1fr)}}
+
+    .cta{padding:2rem; border-radius:26px; display:flex; flex-wrap:wrap; align-items:center; gap:1rem; justify-content:space-between; border:1px solid var(--stroke); background: linear-gradient(180deg, rgba(124,77,255,.18), rgba(255,79,216,.10))}
+
+    footer{padding:2rem 0; border-top:1px solid var(--stroke); color:var(--muted)}
+    .cols{display:grid; grid-template-columns:2fr 1fr 1fr; gap:1.2rem}
+    @media (max-width:800px){.cols{grid-template-columns:1fr}}
+    .small{font-size:.92rem}
+
+    input, textarea{width:100%; padding:.9rem; border-radius:12px; border:1px solid var(--stroke); background: rgba(255,255,255,.03); color:var(--text)}
+    label{font-size:.92rem; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <!-- Confetti overlay -->
+  <div class="confetti" aria-hidden="true" id="confetti"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container nav">
+      <a href="#" class="brand">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff4fd8"/><stop offset="1" stop-color="#ffd54f"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#lg)"/><path d="M33 58a17 17 0 1 0 34 0 17 17 0 0 0-34 0zm9-21 5-7h6l5 7h9a5 5 0 0 1 5 5v26a5 5 0 0 1-5 5H33a5 5 0 0 1-5-5V42a5 5 0 0 1 5-5h9z" fill="white"/></svg>
+        <span>PopFlash Photo Booth</span>
+      </a>
+      <nav class="menu" aria-label="Primary">
+        <a href="#features" class="active">Features</a>
+        <a href="#packages">Packages</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+        <a href="#contact" class="btn">Get a Quote</a>
+      </nav>
+      <button class="mobile-toggle" aria-label="Toggle menu" onclick="toggleMenu()">☰</button>
+    </div>
+    <div id="mobileMenu" class="container">
+      <a href="#features" onclick="toggleMenu()">Features</a>
+      <a href="#packages" onclick="toggleMenu()">Packages</a>
+      <a href="#gallery" onclick="toggleMenu()">Gallery</a>
+      <a href="#contact" onclick="toggleMenu()">Contact</a>
+      <a href="#contact" onclick="toggleMenu()" class="btn" style="width:max-content">Get a Quote</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="chip">Serving Maryland & surrounding areas</span>
+        <h1 class="headline">Make every moment <span style="background:linear-gradient(135deg,var(--brand4),var(--brand1)); -webkit-background-clip:text; background-clip:text; color:transparent">POP</span> with <strong>PopFlash Photo Booth</strong>.</h1>
+        <p class="sub">Simple pricing: <b>$399 for 4 hours</b> and <b>$100 each additional hour</b>. Special: <b>POP PLUS — $699 for 6 hours</b>.</p>
+        <div class="" style="margin-top:1.2rem; display:flex; gap:.8rem; flex-wrap:wrap">
+          <a href="#contact" class="btn">Check Availability</a>
+          <a href="#packages" class="btn ghost" style="border-color:#6e5bc8">See Packages</a>
+        </div>
+      </div>
+      <div class="hero-visual card" aria-hidden="true">
+        <div class="glow"></div>
+        <svg viewBox="0 0 600 450" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#7c4dff" stop-opacity=".7"/>
+              <stop offset="100%" stop-color="#ff4fd8" stop-opacity=".35"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="600" height="450" fill="url(#g1)"/>
+          <g fill="none" stroke="rgba(255,255,255,.45)">
+            <path d="M0,360 Q140,300 300,340 T600,320" stroke-width="3"/>
+            <path d="M0,300 Q140,240 300,280 T600,260" />
+            <path d="M0,240 Q140,180 300,220 T600,200" />
+          </g>
+          <g fill="rgba(255,255,255,.85)">
+            <circle cx="80" cy="120" r="6"/><circle cx="220" cy="90" r="6"/>
+            <circle cx="360" cy="130" r="6"/><circle cx="500" cy="80" r="6"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <h2>Why choose PopFlash?</h2>
+      <div class="grid-3">
+        <article class="feature card">
+          <div class="icon">🎉</div>
+          <h3>Party-Ready Props</h3>
+          <p class="small">Bold signs, sparkly glasses, neon vibes—FUN from the first snap.</p>
+        </article>
+        <article class="feature card">
+          <div class="icon">⚡</div>
+          <h3>Instant Sharing</h3>
+          <p class="small">Guests text, email, or QR-scan their photos instantly.</p>
+        </article>
+        <article class="feature card">
+          <div class="icon">✨</div>
+          <h3>Glam, GIFs & Boomerangs</h3>
+          <p class="small">Beauty filters, boomerangs, and confetti overlays to match your theme.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PACKAGES -->
+  <section id="packages">
+    <div class="container">
+      <h2>Packages & Pricing</h2>
+      <div class="grid-3">
+        <article class="pkg card">
+          <h3>POP Starter</h3>
+          <div class="price">$399 / 4 hours</div>
+          <ul class="small">
+            <li>Attendant & setup</li>
+            <li>Unlimited digital shots</li>
+            <li>Standard backdrop</li>
+          </ul>
+          <div style="margin-top:.7rem"><a href="#contact" class="btn">Book Starter</a></div>
+        </article>
+        <article class="pkg card">
+          <h3>POP PLUS</h3>
+          <div class="price">$699 / 6 hours</div>
+          <ul class="small">
+            <li>Custom overlay & glam filter</li>
+            <li>Prints + sharing station</li>
+            <li>Choice of backdrop</li>
+          </ul>
+          <div style="margin-top:.7rem"><a href="#contact" class="btn">Book POP PLUS</a></div>
+        </article>
+        <article class="pkg card">
+          <h3>Add Time</h3>
+          <div class="price">+$100 / each additional hour</div>
+          <ul class="small">
+            <li>Extend any package</li>
+            <li>Ideal for receptions & galas</li>
+            <li>Flexible end-time coverage</li>
+          </ul>
+          <div style="margin-top:.7rem"><a href="#contact" class="btn">Add Hours</a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="container">
+      <h2>Colorful moments we love</h2>
+      <div class="gallery">
+        <a href="https://source.unsplash.com/1600x1600?party,smile,friends" target="_blank" rel="noopener">
+          <img src="https://source.unsplash.com/600x600?party,smile,friends" alt="Smiling friends at a party">
+        </a>
+        <a href="https://source.unsplash.com/1600x1600?photobooth,props,laugh" target="_blank" rel="noopener">
+          <img src="https://source.unsplash.com/600x600?photobooth,props,laugh" alt="Guests laughing with props">
+        </a>
+        <a href="https://source.unsplash.com/1600x1600?colorful,confetti,celebration" target="_blank" rel="noopener">
+          <img src="https://source.unsplash.com/600x600?colorful,confetti,celebration" alt="Confetti celebration">
+        </a>
+        <a href="https://source.unsplash.com/1600x1600?wedding,reception,party" target="_blank" rel="noopener">
+          <img src="https://source.unsplash.com/600x600?wedding,reception,party" alt="Wedding reception smiles">
+        </a>
+        <a href="https://source.unsplash.com/1600x1600?birthday,party,cake" target="_blank" rel="noopener">
+          <img src="https://source.unsplash.com/600x600?birthday,party,cake" alt="Birthday party fun">
+        </a>
+        <a href="https://source.unsplash.com/1600x1600?corporate,event,party" target="_blank" rel="noopener">
+          <img src="https://source.unsplash.com/600x600?corporate,event,party" alt="Corporate event vibes">
+        </a>
+      </div>
+      <p class="small" style="margin-top:1rem; color:var(--muted)">Photo placeholders via Unsplash — swap with your own event photos anytime.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="container">
+      <div class="cta card">
+        <div>
+          <h3 style="margin:.2rem 0">Let’s make your event unforgettable</h3>
+          <p class="small" style="margin:0; color:var(--muted)">POP Starter $399 (4 hrs) • POP PLUS $699 (6 hrs) • +$100 per extra hour</p>
+        </div>
+        <a href="#contact" class="btn">Get a Fast Quote</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <h2>Contact us</h2>
+      <div class="grid-2">
+        <form class="card" style="padding:1.1rem" onsubmit="return sendEmail(event)">
+          <div style="display:flex; gap:.8rem; flex-wrap:wrap">
+            <div style="flex:1; min-width:220px">
+              <label for="name">Name</label>
+              <input id="name" name="name" required placeholder="Your name" />
+            </div>
+            <div style="flex:1; min-width:220px">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required placeholder="you@example.com" />
+            </div>
+          </div>
+          <div style="margin-top: .8rem">
+            <label for="event">Event Type / Date</label>
+            <input id="event" name="event" placeholder="Wedding • 06/21/2026" />
+          </div>
+          <div style="margin-top: .8rem">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="Tell us about your event…"></textarea>
+          </div>
+          <div style="margin-top:1rem; display:flex; gap:.8rem; align-items:center; flex-wrap:wrap">
+            <button type="submit" class="btn">Send</button>
+            <span class="small" style="color:var(--muted)">We typically reply within a few hours.</span>
+          </div>
+        </form>
+        <div class="card" style="padding:1.1rem">
+          <h3>Prefer email?</h3>
+          <p class="small">Reach us directly at <a href="mailto:request@popflash.fun">request@popflash.fun</a></p>
+          <h3 style="margin-top:1rem">Serving</h3>
+          <p class="small">Maryland & surrounding areas</p>
+          <h3 style="margin-top:1rem">Follow</h3>
+          <p class="small"><a href="#">Instagram</a> · <a href="#">TikTok</a> · <a href="#">YouTube</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container cols">
+      <div>
+        <div class="brand">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00e1ff"/><stop offset="1" stop-color="#ff4fd8"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#lg2)"/><path d="M33 58a17 17 0 1 0 34 0 17 17 0 0 0-34 0zm9-21 5-7h6l5 7h9a5 5 0 0 1 5 5v26a5 5 0 0 1-5 5H33a5 5 0 0 1 5-5V42a5 5 0 0 1 5-5h9z" fill="white"/></svg>
+          <strong>PopFlash Photo Booth</strong>
+        </div>
+        <p class="small" style="margin-top:.4rem">© <span id="year"></span> PopFlash Photo Booth. All rights reserved.</p>
+      </div>
+      <div>
+        <h4 class="small" style="color:#e8e0ee; margin:.2rem 0">Company</h4>
+        <p class="small"><a href="#features">Features</a><br/><a href="#packages">Packages</a><br/><a href="#contact">Contact</a></p>
+      </div>
+      <div>
+        <h4 class="small" style="color:#e8e0ee; margin:.2rem 0">Legal</h4>
+        <p class="small"><a href="#">Privacy</a><br/><a href="#">Terms</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu(){
+      const m = document.getElementById('mobileMenu');
+      m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+    }
+    function sendEmail(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const event = document.getElementById('event').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const to = 'request@popflash.fun';
+      const subject = encodeURIComponent(`PopFlash inquiry from ${name}`);
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nEvent: ${event}\n\nMessage:\n${message}`);
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+      alert('Opening your email client to send the message.');
+      return false;
+    }
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // simple confetti generator
+    (function confetti(){
+      const c = document.getElementById('confetti');
+      const colors = ['#ff4fd8','#7c4dff','#00e1ff','#ffd54f','#4dff8a'];
+      for(let i=0;i<80;i++){
+        const s = document.createElement('span');
+        const size = 6 + Math.random()*10;
+        s.style.left = Math.random()*100 + 'vw';
+        s.style.top = (-10 - Math.random()*100) + 'px';
+        s.style.width = size + 'px';
+        s.style.height = (size*1.4) + 'px';
+        s.style.transform = `rotate(${Math.random()*360}deg)`;
+        s.style.background = colors[(Math.random()*colors.length)|0];
+        s.style.animationDelay = (Math.random()*6) + 's';
+        s.style.animationDuration = (5 + Math.random()*4) + 's';
+        s.style.opacity = .8;
+        c.appendChild(s);
+      }
+    })();
+  </script>
+</body>
+</html>
